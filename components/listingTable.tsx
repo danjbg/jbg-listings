@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { useTable, Column } from 'react-table';
 
@@ -31,41 +33,36 @@ const ListingTable: React.FC = () => {
   return (
     <table {...getTableProps()} style={{ border: 'solid 1px black' }}>
       <thead>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
-              <th
-                {...column.getHeaderProps()}
-                style={{
-                  borderBottom: 'solid 3px red',
-                  background: 'aliceblue',
-                  color: 'black',
-                  fontWeight: 'bold',
-                }}
-              >
-                {column.render('Header')}
-              </th>
-            ))}
-          </tr>
-        ))}
+        {headerGroups.map((headerGroup, headerGroupIndex) => {
+          const { key: headerGroupKey, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
+          return (
+            <tr key={`header-group-${headerGroupIndex}`} {...restHeaderGroupProps}>
+              {headerGroup.headers.map((column, columnIndex) => {
+                const { key: columnKey, ...restColumnProps } = column.getHeaderProps();
+                return (
+                  <th key={`column-${columnIndex}`} {...restColumnProps}>
+                    {column.render('Header')}
+                  </th>
+                );
+              })}
+            </tr>
+          );
+        })}
       </thead>
       <tbody {...getTableBodyProps()}>
-        {rows.map(row => {
+        {rows.map((row, rowIndex) => {
           prepareRow(row);
+          const { key: rowKey, ...restRowProps } = row.getRowProps(); // Extract the key from the row props
           return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map(cell => (
-                <td
-                  {...cell.getCellProps()}
-                  style={{
-                    padding: '10px',
-                    border: 'solid 1px gray',
-                    background: 'papayawhip',
-                  }}
-                >
-                  {cell.render('Cell')}
-                </td>
-              ))}
+            <tr key={`row-${rowIndex}`} {...restRowProps}>
+              {row.cells.map((cell, cellIndex) => {
+                const { key: cellKey, ...restProps } = cell.getCellProps();
+                return (
+                  <td key={`cell-${rowIndex}-${cellIndex}`} {...restProps}>
+                    {cell.render('Cell')}
+                  </td>
+                );
+              })}
             </tr>
           );
         })}
